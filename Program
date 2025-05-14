@@ -1,0 +1,32 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+
+# Sample data (You can replace this with actual CSV or data loading method)
+# Example data frame structure
+data = {
+    'Date': pd.date_range(start='2024-01-01', periods=100, freq='D'),
+    'Price': pd.Series([100 + i + (i%5)*2 for i in range(100)])  # mock price data
+}
+df = pd.DataFrame(data)
+
+# Forecasting with ARIMA
+model_arima = ARIMA(df['Price'], order=(5,1,0))
+model_fit = model_arima.fit()
+forecast = model_fit.forecast(steps=10)
+
+# Append forecast to dataframe
+future_dates = pd.date_range(start=df['Date'].iloc[-1] + pd.Timedelta(days=1), periods=10)
+forecast_df = pd.DataFrame({'Date': future_dates, 'Forecast': forecast})
+
+# Plotting
+plt.figure(figsize=(10, 5))
+plt.plot(df['Date'], df['Price'], label='Historical Price')
+plt.plot(forecast_df['Date'], forecast_df['Forecast'], label='Forecast', color='red', linestyle='--')
+plt.title("Market Forecast using ARIMA")
+plt.xlabel("Date")
+plt.ylabel("Price")
+plt.legend()
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
